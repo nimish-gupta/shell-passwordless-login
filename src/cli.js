@@ -33,9 +33,10 @@ const verify = async ({ token }) => {
 export async function cli() {
 	const email = await promptEmail({ start: `Enter your email: ` });
 	console.log();
-	const spinner = ora(
-		`Sending you an email for verification on ${email}...`
-	).start();
+	const spinner = ora().start();
+	console.log(
+		chalk.yellow(`Sending you an email for verification for ${email}...`)
+	);
 
 	const { token } = await login({ email });
 
@@ -43,6 +44,7 @@ export async function cli() {
 
 	let verified;
 	spinner.start(chalk.yellow('Waiting for email verification...'));
+
 	while (!verified) {
 		console.log();
 		await sleep({ sec: 2 });

@@ -13,21 +13,24 @@ const userFromToken = ({ token }) => {
 	return users[payload.email];
 };
 
-router.post('/', function (req, res) {
+router.get('/', function (req, res, next) {
+	res.render('index', { title: 'Express' });
+});
+
+router.post('/login', function (req, res) {
 	const email = req.body.email;
 	const id = users[email] ? users[email].id : uuid();
 	// token expires in 10 min
 	const token = jwt.sign({ email, id }, JWT_TOKEN, {
 		expiresIn: 60 * 1000 * 10,
 	});
-	console.log({ token });
 
 	users[email] = { id };
 
 	res.json({ token });
 });
 
-router.get('/verify/mail', (req, res) => {
+router.get('/login/verify/mail', (req, res) => {
 	const user = userFromToken({ token: req.query.token });
 
 	if (user) {
@@ -38,7 +41,7 @@ router.get('/verify/mail', (req, res) => {
 	}
 });
 
-router.post('/verify/cli', (req, res) => {
+router.post('/login/verify/cli', (req, res) => {
 	const user = userFromToken({ token: req.body.token });
 
 	if (user && user.verified) {
