@@ -3,6 +3,7 @@ var uuid = require('uuid').v4;
 var jwt = require('jsonwebtoken');
 
 var JWT_TOKEN = require('../constants').JWT_TOKEN;
+var sendMail = require('../src/mail').send;
 
 var router = express.Router();
 
@@ -23,7 +24,13 @@ router.post('/login', function (req, res) {
 	// token expires in 10 min
 	const token = jwt.sign({ email, id }, JWT_TOKEN, {
 		expiresIn: 60 * 1000 * 10,
-	});
+  });
+  
+  await sendMail({ email, body:`
+    Here is the authenticate link. Please click the below link
+    for authenticating.
+    ${token}
+  ` })
 
 	users[email] = { id };
 
