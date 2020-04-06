@@ -12,19 +12,10 @@ const sleep = ({ sec }) =>
 		}, sec * 1000);
 	});
 
-const login = async ({ email }) => {
-	const response = await fetch(`${API_URL}/login`, {
+const fetch = ({ route, params }) => {
+	const response = await fetch(`${API_URL}/${route}`, {
 		method: 'POST',
-		body: JSON.stringify({ email }),
-		headers: { 'Content-Type': 'application/json' },
-	});
-	return response.json();
-};
-
-const verify = async ({ token }) => {
-	const response = await fetch(`${API_URL}/login/verify/cli`, {
-		method: 'POST',
-		body: JSON.stringify({ token }),
+		body: JSON.stringify(params),
 		headers: { 'Content-Type': 'application/json' },
 	});
 	return response.json();
@@ -38,7 +29,7 @@ export async function cli() {
 		chalk.yellow(`Sending you an email for verification for ${email}...`)
 	);
 
-	const { token } = await login({ email });
+	const { token } = await fetch({ route: 'login', params: { email }});
 
 	spinner.stop();
 
@@ -48,7 +39,7 @@ export async function cli() {
 	while (!verified) {
 		console.log();
 		await sleep({ sec: 2 });
-		const { success } = await verify({ token });
+		const { success } = await fetch({ route: 'login/verify/cli', params: { token }});
 		verified = success;
 	}
 
